@@ -1,4 +1,4 @@
-%define _prefix /home/.system/opt/qt5/
+%define _prefix /opt/qt5/
 
 Name:       qt5-lgpl-qtxmlpatterns
 Summary:    Qt XML Patterns library
