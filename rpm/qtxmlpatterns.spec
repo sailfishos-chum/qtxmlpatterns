@@ -51,7 +51,7 @@ This package contains the XMLPatterns library development files
 %build
 export QTDIR=%{_prefix}
 touch .git
-/home/.system/opt/qt5/lib64/qt5/bin/qmake
+%{_prefix}/lib64/qt5/bin/qmake
 make %{?_smp_mflags}
 
 %install
