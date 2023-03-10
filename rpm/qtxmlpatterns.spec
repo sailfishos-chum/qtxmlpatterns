@@ -79,7 +79,7 @@ rm -rf %{buildroot}/%{_includedir}/qt5/Qt
 %defattr(-,root,root,-)
 %{_libdir}/libQt5XmlPatterns.so.5
 %{_libdir}/libQt5XmlPatterns.so.5.*
-%{_bindir}/*
+%{_libdir}/qt5/bin/*
 
 %files devel
 %defattr(-,root,root,-)
