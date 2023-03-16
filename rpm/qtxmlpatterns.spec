@@ -1,95 +1,76 @@
-%define _prefix /opt/qt5/
+%global qt_version 5.15.8
 
-Name:       qt5-lgpl-qtxmlpatterns
-Summary:    Qt XML Patterns library
-Version:    5.15.8
-Release:    1%{?dist}
-License:    (LGPLv2 or LGPLv3) with exception or Qt Commercial
-URL:        https://www.qt.io
-Source0:    %{name}-%{version}.tar.bz2
-BuildRequires:  qt5-lgpl-qtcore-devel
-BuildRequires:  qt5-lgpl-qtxml-devel
-BuildRequires:  qt5-lgpl-qtgui-devel
-BuildRequires:  qt5-lgpl-qtnetwork-devel
-BuildRequires:  qt5-lgpl-qtwidgets-devel
-BuildRequires:  qt5-lgpl-qmake
-BuildRequires:  fdupes
-BuildRequires:  perl
+Summary: Qt5 - QtXmlPatterns component
+Name: opt-qt5-qtxmlpatterns
+Version: 5.15.8
+Release: 1%{?dist}
+# See LGPL_EXCEPTIONS.txt, LICENSE.GPL3, respectively, for exception details
+License: LGPLv2 with exceptions or GPLv3 with exceptions
+Url:     http://www.qt.io
+Source0: %{name}-%{version}.tar.bz2
+
+BuildRequires: make
+BuildRequires: opt-qt5-qtbase-devel >= %{qt_version}
+BuildRequires: opt-qt5-qtbase-private-devel
+#libQt5Core.so.5(Qt_5_PRIVATE_API)(64bit)
+%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
+
+BuildRequires: opt-qt5-qtdeclarative-devel
 
 %description
-Qt is a cross-platform application and UI framework. Using Qt, you can
-write web-enabled applications once and deploy them across desktop,
-mobile and embedded systems without rewriting the source code.
-.
-This package contains the XMLPatterns library
-
+The Qt XML Patterns module provides support for XPath, XQuery, XSLT,
+and XML Schema validation.
 
 %package devel
-Summary:    Qt XML Patterns - development files
-Requires:   %{name} = %{version}-%{release}
-
+Summary: Development files for %{name}
+Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: opt-qt5-qtbase-devel%{?_isa}
 %description devel
-Qt is a cross-platform application and UI framework. Using Qt, you can
-write web-enabled applications once and deploy them across desktop,
-mobile and embedded systems without rewriting the source code.
-.
-This package contains the XMLPatterns library development files
-
-
-#### Build section
+%{summary}.
 
 %prep
-%setup -q -n %{name}-%{version}/upstream
+%autosetup -n %{name}-%{version}/upstream
 
-# The original source assumes build happens within a monolithic tree.
-# The tool used is syncqt, which complains a lot but really only wants
-# to know where the mkspecs may be found. Hence the environment variable
-# name is a little misleading.
-#
-# XXX: FOR THE LOVE OF ALL THAT MAY BE HOLY - DO NOT USE RPMBUILD AND
-# ITS INTERNAL qmake MACRO. IT BREAKS THE BUILD!
+
 %build
-export QTDIR=%{_prefix}
+export QTDIR=%{_opt_qt5_prefix}
 touch .git
-%{_prefix}/%{_lib}/qt5/bin/qmake
-make %{?_smp_mflags}
+
+%opt_qmake_qt5 %{?no_examples}
+
+%make_build
+
 
 %install
-rm -rf %{buildroot}
-%qmake5_install
-# Remove unneeded .la files
-rm -f %{buildroot}/%{_libdir}/*.la
-# Fix wrong path in prl files
-find %{buildroot}%{_libdir} -type f -name '*.prl' \
--exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d;s/\(QMAKE_PRL_LIBS =\).*/\1/" {} \;
+make install INSTALL_ROOT=%{buildroot}
 
-# We don't need qt5/Qt/
-rm -rf %{buildroot}/%{_includedir}/qt5/Qt
-
-#
-%fdupes %{buildroot}/%{_includedir}
-
+## .prl/.la file love
+# nuke .prl reference(s) to %%buildroot, excessive (.la-like) libs
+pushd %{buildroot}%{_opt_qt5_libdir}
+for prl_file in libQt5*.prl ; do
+  sed -i -e "/^QMAKE_PRL_BUILD_DIR/d" ${prl_file}
+  if [ -f "$(basename ${prl_file} .prl).so" ]; then
+    rm -fv "$(basename ${prl_file} .prl).la"
+    sed -i -e "/^QMAKE_PRL_LIBS/d" ${prl_file}
+  fi
+done
+popd
 
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-
 %files
-%defattr(-,root,root,-)
-%{_libdir}/libQt5XmlPatterns.so.5
-%{_libdir}/libQt5XmlPatterns.so.5.*
-%{_libdir}/qt5/bin/*
+%license LICENSE.LGPL*
+%{_opt_qt5_libdir}/libQt5XmlPatterns.so.5*
+%{_opt_qt5_archdatadir}/qml/QtQuick/XmlListModel/
 
 %files devel
-%defattr(-,root,root,-)
-%{_libdir}/libQt5XmlPatterns.so
-%{_libdir}/libQt5XmlPatterns.prl
-%{_libdir}/pkgconfig/*
-%{_includedir}/qt5/
-%{_datadir}/qt5/mkspecs/
-%{_libdir}/cmake/
-
-
-#### No changelog section, separate $pkg.changes contains the history
+%{_opt_qt5_bindir}/xmlpatterns*
+%{_opt_qt5_headerdir}/Qt*/
+%{_opt_qt5_libdir}/libQt5*.so
+%{_opt_qt5_libdir}/libQt5*.prl
+%{_opt_qt5_libdir}/cmake/Qt5*/
+%{_opt_qt5_libdir}/pkgconfig/Qt5*.pc
+%{_opt_qt5_archdatadir}/mkspecs/modules/*.pri
 
