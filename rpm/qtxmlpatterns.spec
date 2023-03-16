@@ -13,7 +13,7 @@ BuildRequires: make
 BuildRequires: opt-qt5-qtbase-devel >= %{qt_version}
 BuildRequires: opt-qt5-qtbase-private-devel
 #libQt5Core.so.5(Qt_5_PRIVATE_API)(64bit)
-%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
+%{?_qt5:Requires: %{_opt_qt5}%{?_isa} = %{_opt_qt5_version}}
 
 BuildRequires: opt-qt5-qtdeclarative-devel
 
