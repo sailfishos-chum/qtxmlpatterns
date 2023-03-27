@@ -9,13 +9,15 @@ License: LGPLv2 with exceptions or GPLv3 with exceptions
 Url:     http://www.qt.io
 Source0: %{name}-%{version}.tar.bz2
 
+%{?opt_qt5_default_filter}
+
 BuildRequires: make
 BuildRequires: opt-qt5-qtbase-devel >= %{qt_version}
 BuildRequires: opt-qt5-qtbase-private-devel
 #libQt5Core.so.5(Qt_5_PRIVATE_API)(64bit)
 %{?_opt_qt5:Requires: %{_opt_qt5}%{?_isa} = %{_opt_qt5_version}}
-
 BuildRequires: opt-qt5-qtdeclarative-devel
+Requires: opt-qt5-qtdeclarative >= %{qt_version}
 
 %description
 The Qt XML Patterns module provides support for XPath, XQuery, XSLT,
