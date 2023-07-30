@@ -1,8 +1,8 @@
-%global qt_version 5.15.9
+%global qt_version 5.15.10
 
 Summary: Qt5 - QtXmlPatterns component
 Name: opt-qt5-qtxmlpatterns
-Version: 5.15.9
+Version: 5.15.10
 Release: 1%{?dist}
 # See LGPL_EXCEPTIONS.txt, LICENSE.GPL3, respectively, for exception details
 License: LGPLv2 with exceptions or GPLv3 with exceptions
